@@ -46,7 +46,8 @@ public class Anadir extends Activity {
     private ImageButton btnhsa, btnhre, btnfsa, btnfre;
     private static TextView hsa, hre, fsa, fre;
     private EditText descri, lugarsal, lugarre;
-    private ArrayList<Actividad> actividades;
+    //private ArrayList<Actividad> actividades;
+    private Actividad actividadModificable;
     private ArrayList<Profesor> profesores;
     private ArrayList<Grupo> grupos;
     Actividad actividad = null;
@@ -60,7 +61,14 @@ public class Anadir extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         else
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        actividades = (ArrayList<Actividad>) getIntent().getExtras().get("actividades");
+        //actividades = (ArrayList<Actividad>) getIntent().getExtras().get("actividades");
+
+        /*if(getIntent().getExtras().getString("accion").compareTo("modificar")==0){
+            rellenarEdicion();
+            actividadModificable=new Actividad();
+            actividadModificable= getIntent().getParcelableExtra("actividad");
+        }*/
+
         profesores = (ArrayList<Profesor>) getIntent().getExtras().get("profesores");
         grupos = (ArrayList<Grupo>) getIntent().getExtras().get("grupos");
         layouthora = (View) findViewById(R.id.hora);
@@ -85,6 +93,7 @@ public class Anadir extends Activity {
                 R.array.tipo, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinertipo.setAdapter(adapter);
+
         spinertipo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -119,6 +128,20 @@ public class Anadir extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinergrupo.setAdapter(adapter4);
     }
+
+   /* public void rellenarEdicion(){
+        if(actividadModificable.getTipo().equals("complementaria"))
+            spinertipo.setSelection(0);
+        else{
+            spinertipo.setSelection(1);
+        }
+        for(int i=0;i< profesores.size();i++){
+            if(profesores.get(i).getId().equals(actividadModificable.getIdProfesor())){
+
+            }
+
+        }
+    }*/
 
     public void visibleExtraordinaria() {
         spinerprofe.setVisibility(View.VISIBLE);
@@ -210,7 +233,7 @@ public class Anadir extends Activity {
     }
 
 
-    /*-------------------------------------HEBRA PARA INSERTAR LOS ACTIVIDADES----------------------------------------------*/
+    /*-------------------------------------HEBRA PARA INSERTAR LAS ACTIVIDADES----------------------------------------------*/
 
    private class PostRestful extends AsyncTask<PasarParametrosPost, Void, String>{
 

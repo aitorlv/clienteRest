@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +29,10 @@ import java.util.ArrayList;
 
 public class Principal extends Activity {
 
-    private TextView tvInicial;
+
     private final static String URL_BASE = "http://ieszv.x10.bz/restful/api/";
     private ListView lv;
+    private EditText nombre,edgrupo,departamento,tipo,fechaInicio,fechaFin,descripcion,lugarInicio,lugarFin;
     private Adaptador ad;
     private ArrayList<Actividad> actividades;
     private ArrayList<Profesor> profesores;
@@ -56,8 +58,6 @@ public class Principal extends Activity {
 
         lv = (ListView) findViewById(R.id.lvActividades);
         ad = new Adaptador(Principal.this, R.layout.detalle, arrayParaAdaptador);
-        //lv.setAdapter(ad);
-       // ad.notifyDataSetChanged();
 
 
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -71,13 +71,34 @@ public class Principal extends Activity {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent visualiza =new Intent(Principal.this,Visualizar.class);
-                    visualiza.putExtra("actividad",actividades.get(position));
-                    visualiza.putExtra("profesor",daObjetoProfesor(actividades.get(position).getIdProfesor()));
+                if(getResources().getBoolean(R.bool.tablet)) {
+                    nombre=(EditText)findViewById(R.id.spinnerNombre);
+                    edgrupo=(EditText)findViewById(R.id.spinnerGrupo);
+                    departamento=(EditText)findViewById(R.id.tvDepartamento);
+                    tipo=(EditText)findViewById(R.id.tvTipo);
+                    fechaInicio=(EditText)findViewById(R.id.tvInicio);
+                    fechaFin=(EditText)findViewById(R.id.tvFin);
+                    descripcion=(EditText)findViewById(R.id.tvDescripcionDetalle);
+                    lugarInicio=(EditText)findViewById(R.id.tvLugarI);
+                    lugarFin=(EditText)findViewById(R.id.tvLugarF);
+                    nombre.setText(daProfesor(actividades.get(position).getIdProfesor()));
+                    edgrupo.setText(daGrupo(actividades.get(position).getId()));
+                    departamento.setText(daDepartamento(actividades.get(position).getIdProfesor()));
+                    tipo.setText(actividades.get(position).getTipo());
+                    fechaInicio.setText(actividades.get(position).getFechaI());
+                    fechaFin.setText(actividades.get(position).getFechaF());
+                    descripcion.setText(actividades.get(position).getDescripcion());
+                    lugarInicio.setText(actividades.get(position).getLugarI());
+                    lugarFin.setText(actividades.get(position).getLugarF());
+                } else {
+                    Intent visualiza = new Intent(Principal.this, Visualizar.class);
+                    visualiza.putExtra("actividad", actividades.get(position));
+                    visualiza.putExtra("profesor", daObjetoProfesor(actividades.get(position).getIdProfesor()));
                     visualiza.putExtra("grupo", daObjetoGrupo(actividades.get(position).getId()));
                     visualiza.putExtra("todosprofesores", profesores);
                     visualiza.putExtra("todosgrupos", grupos);
-                    startActivityForResult(visualiza,VISU);
+                    startActivityForResult(visualiza, VISU);
+                }
             }
         });
     }
@@ -132,6 +153,7 @@ public class Principal extends Activity {
     public void tostada(String mensaje){
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
+
     public Profesor daObjetoProfesor(String id){
         String profe="";
         for (Profesor p:profesores){
@@ -157,6 +179,15 @@ public class Principal extends Activity {
     }
 
 /*---------------------------------------- SACAR EL GRUPO YE L PORFESOR A PARTIR DEL ID DE LA ACTIVIDAD-------------------------------------*/
+public String daDepartamento(String id){
+    String profe="";
+    for (Profesor p:profesores){
+        if(p.getId().compareTo(id)==0){
+            return p.getDepartamento();
+        }
+    }
+    return null;
+}
     public String daProfesor(String id){
         String profe="";
         for (Profesor p:profesores){
@@ -184,8 +215,6 @@ public class Principal extends Activity {
     /*----------------------------------CARGAMOS TODOS LOS DATOS NECESARIOS ---------------------------------------------------*/
 
     private void cargarActividades() {
-        /*petición get al servidor restful para obtener las actividades, recibo una lista en formato json, lo paso a arraylist y cargo el listview EN UNA HEBRA
-         a la que le paso la URL*/
         actividades.clear();
         profesores.clear();
         grupos.clear();
